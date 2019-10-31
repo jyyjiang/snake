@@ -117,12 +117,79 @@ void Init()
 	//绘制地图
 	InitMap();
 	InitSnake();
+	InitFood();
 
 }
 void UpdateScreen()
 {
 	DrawSnake();
 }
+
+//w 上
+//s 下
+//a 左
+//d 右
+void SnakeMove(int key)
+{
+	int delta_x=0;
+	int delta_y=0;
+	
+
+
+
+	if(key=='w'||key=='W')
+	{
+		delta_x=0;
+		delta_y=-1;
+	}
+	else if (key=='s'||key=='s')
+	{
+		delta_x=0;
+		delta_y=1;
+	}
+	else if (key=='a'||key=='A')
+	{
+		delta_x=-1;
+		delta_y=0;
+	}
+	else if (key=='d'||key=='D')
+	{
+		delta_x=1;
+		delta_y=0;
+	}
+	else
+	{
+		//无效按键
+		return;
+	}
+		//后一个节点=前一个节点的坐标
+	//g_snake.size-1;最后一个节点的坐标
+	//i>0不包括头节点
+	DrawChar(g_snake.pos [g_snake.size -1].x ,g_snake.pos [g_snake.size -1].y ,' ');
+	for(int i=g_snake.size -1;i>0;i--)
+	{
+		g_snake.pos[i].x=g_snake.pos[i-1].x ;
+		g_snake.pos[i].y=g_snake.pos[i-1].y ; 
+	      
+	}
+	g_snake.pos [0].x +=delta_x;
+	g_snake.pos [0].y +=delta_y ;
+}
+
+//头节点跟食物的坐标相同
+
+void EatFood()
+{
+	if(g_snake.pos [0].x ==g_food.x &&g_snake.pos [0].y ==g_food.y )
+	{
+		g_snake.size++;
+		//新东方尾节点跟食物的坐标一致
+		g_snake.pos [g_snake.size -1].x =g_food.x ;
+		g_snake.pos [g_snake.size -1].y =g_food.y ;
+		//InitFood();
+	}
+}
+
 void GameLoop()
 {
 	int key=0;
@@ -138,6 +205,8 @@ void GameLoop()
 		{
 		return;
 		}
+		//键盘移动贪吃蛇
+		SnakeMove(key);
 		//处理撞墙等事件
 		//更新画面
 		UpdateScreen();
@@ -154,12 +223,14 @@ void Score()
 
 int main(int argc, char* argv[])
 {
+	
 //初始化，画地图
     Init();
 //游戏的主循环，按键处理，游戏画面更新，吃力撞墙事件
     GameLoop();
 //打印得分
     Score();
+	
 
 	return 0;
 }
